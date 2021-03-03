@@ -1,51 +1,66 @@
 import React, { useEffect, useRef } from 'react';
 import Chart from "chart.js";
 
-const CurrencyChart = () => {
+const CurrencyChart = ({ rawData, toCurrency }) => {
     const ref = useRef();
+    const sourceData = {x:[], y:[]};
 
+    // Get data from rawData for x and y column of the chart
+    const populateSourceData = (source) => {
+        // Dates have to be sorted first, then populate sourceData with the help of this sorted array of keys
+        const keys = Object.keys(source).sort();
+
+        // Iterate over keys, check if currency is equal to selected currency, use only those rate values
+        for(const key of keys) {
+            for(const innerKey in source[key]) {
+                if(innerKey === toCurrency) {
+                    sourceData.x.push(key);
+                    sourceData.y.push(source[key][innerKey]);
+                }
+            }
+        }
+    };
+
+    populateSourceData(rawData);
+   
     useEffect(() => {
-        const ChartRef = ref.current.getContext("2d");
+        const ChartRef = ref.current.getContext("2d");    
         const CurrencyChart = new Chart(ChartRef, {
             type: 'line',
             data: {
-                labels: ['2020-03-01', '2020-03-02', '2020-03-03', '2020-03-04', '2020-03-05'],
+                labels: sourceData.x,
                 datasets: [{
-                    label: 'Currency rate changes',
-                    data: [12, 19, 3, 5, 2, 3],
-                    // backgroundColor: [
-                    //     'rgba(255, 99, 132, 0.2)',
-                    //     'rgba(54, 162, 235, 0.2)',
-                    //     'rgba(255, 206, 86, 0.2)',
-                    //     'rgba(75, 192, 192, 0.2)',
-                    //     'rgba(153, 102, 255, 0.2)'
-                    // ],
+                    label: `Currency rate changes for ${toCurrency}`,
+                    data: sourceData.y,
                     borderColor: [
-                        'rgba(0, 0, 0, 1)',
-                        // 'rgba(54, 162, 235, 1)',
-                        // 'rgba(255, 206, 86, 1)',
-                        // 'rgba(75, 192, 192, 1)',
-                        // 'rgba(153, 102, 255, 1)'
+                        'rgba(0, 0, 0, 1)'
                     ],
                     borderWidth: 1
                 }]
             },
             options: {
+                legend: {
+                    labels: {
+                        fontColor: "black",
+                        fontSize: 18,
+                    }
+                },    
                 scales: {
                     yAxes: [{
                         ticks: {
-                            beginAtZero: true
+                            suggestedMin: Math.min(...sourceData.y),
+                            suggestedMax: Math.max(...sourceData.y)
                         }
                     }]
                 }
             }
         });
 
-        // Remove old chart before re-render, sometimes the old chart stays there the new one just overlaps it
+        // Remove old chart before re-render, old chart stays there the new one just overlaps it - this fixes the issue
         return () => {
             CurrencyChart.destroy();
         }
-    }, []);
+    }, [rawData, toCurrency]);
 
     return (
         <canvas id="myChart" width="300" height="200" ref={ref}></canvas>

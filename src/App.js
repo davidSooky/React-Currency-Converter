@@ -11,12 +11,26 @@ const App = () => {
   const [amount, setAmount] = useState(1);
   const [currencies, setCurrencies] = useState([]);
   const [rates, setRates] = useState([]);
+  const [rawData, setRawData] = useState([]);
   const [fromCurrency, setFromCurrency] = useState("EUR");
   const [toCurrency, setToCurrency] = useState("HUF");
 
+  // To calculate result from currency rate
   let result;
-  const url = "https://api.exchangeratesapi.io/latest";
-  // const url = "https://api.exchangeratesapi.io/history?start_at=2018-01-01&end_at=2020-02-28";
+  // Date to dynamically fetch data from current date
+  const splitDate = new Date().toLocaleDateString().split("/");
+  const currentDate = `${splitDate[2]}-${checkDateFormat(splitDate[1])}-${checkDateFormat(splitDate[0])}`;
+  const previousDate = `${splitDate[2] - 1}-${checkDateFormat(splitDate[1])}-${checkDateFormat(splitDate[0])}`;
+  // const url = "https://api.exchangeratesapi.io/latest";
+  const url = `https://api.exchangeratesapi.io/history?start_at=${previousDate}&end_at=${currentDate}`;
+
+  // Insert 0 before day and month index, if they are 1 digit numbers
+  function checkDateFormat(input) {
+    if(input[1] === undefined) {
+      return `0${input}`;
+    }
+    return input;
+  }
 
   useEffect(() => {
     const getRates =  async () => {
@@ -25,13 +39,14 @@ const App = () => {
             base: fromCurrency
           }
         });
-        console.log(Object.keys(data.rates).length);
-        setCurrencies(Object.keys(data.rates));
-        setRates(data.rates);
+        
+        setRawData(data.rates);
+        setCurrencies(Object.keys(data.rates[currentDate]));
+        setRates(data.rates[currentDate]);
     };
 
     getRates();
-  }, [fromCurrency]);
+  }, [fromCurrency, currentDate, url]);
 
   result = (amount * rates[toCurrency]).toFixed(3);
   return (
@@ -50,7 +65,7 @@ const App = () => {
         <p className="select-text">Click to select currency:</p>
         <CurrencySelect currency={toCurrency} currencies={currencies} onCurrencyChange={(e) => setToCurrency(e.target.value)}  />
       </section>
-      <CurrencyChart />
+      <CurrencyChart rawData={rawData} toCurrency={toCurrency} />
     </div>
   );
 };
