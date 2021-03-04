@@ -22,7 +22,6 @@ const App = () => {
   const splitDate = new Date().toLocaleDateString().split("/");
   const currentDate = `${splitDate[2]}-${checkDateFormat(splitDate[0])}-${checkDateFormat(splitDate[1])}`;
   const previousDate = `${splitDate[2] - 1}-${checkDateFormat(splitDate[0])}-${checkDateFormat(splitDate[1])}`;
-  // const url = "https://api.exchangeratesapi.io/latest";
   const url = `https://api.exchangeratesapi.io/history?start_at=${previousDate}&end_at=${currentDate}`;
 
   // Insert 0 before day and month index, if they are 1 digit numbers
@@ -45,15 +44,18 @@ const App = () => {
         setCurrencies(Object.keys(data.rates[currentDate]).sort());
         setTimeout(() => {
           setRates(data.rates[currentDate]);
-        }, 3500);
+        }, 2000);
     };
 
     getRates();
+
+    return () => {
+      setRates([]);
+    }
   }, [fromCurrency, currentDate, url]);
 
   result = (amount * rates[toCurrency]).toFixed(3);
 
-  console.log(rates.length)
   return (
     rates.length === undefined ?
     <div className="container">
@@ -80,7 +82,8 @@ const App = () => {
       </section>
       <CurrencyChart rawData={rawData} toCurrency={toCurrency} />
     </div>
-    : <Loader />
+    : 
+    <Loader />
   );
 };
 

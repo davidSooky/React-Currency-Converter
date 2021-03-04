@@ -16,8 +16,9 @@ button {
 
 .handling {
     position: relative;
-    height: 120px;
-    width: 80px;
+    height: 100%;
+    padding: 20px 0;
+    width: 100%;
 }
 
 .handling div {
@@ -38,4 +39,10 @@ button {
 
 button:active  {
     transform: scale(0.95);
+}
+
+@media (max-width: 805px) {
+    .handling div:first-child button:first-of-type {
+        margin-right: 5px;
+    }
 }
