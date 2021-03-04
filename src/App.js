@@ -4,6 +4,7 @@ import CurrencySelect from "./components/CurrencySelect";
 import Header from "./components/Header";
 import AmountHandling from "./components/AmountHandling";
 import CurrencyChart from "./components/CurrencyChart";
+import Loader from "./components/Loader";
 import axios from "axios";
 import "./App.css";
 
@@ -19,8 +20,8 @@ const App = () => {
   let result;
   // Date to dynamically fetch data from current date
   const splitDate = new Date().toLocaleDateString().split("/");
-  const currentDate = `${splitDate[2]}-${checkDateFormat(splitDate[1])}-${checkDateFormat(splitDate[0])}`;
-  const previousDate = `${splitDate[2] - 1}-${checkDateFormat(splitDate[1])}-${checkDateFormat(splitDate[0])}`;
+  const currentDate = `${splitDate[2]}-${checkDateFormat(splitDate[0])}-${checkDateFormat(splitDate[1])}`;
+  const previousDate = `${splitDate[2] - 1}-${checkDateFormat(splitDate[0])}-${checkDateFormat(splitDate[1])}`;
   // const url = "https://api.exchangeratesapi.io/latest";
   const url = `https://api.exchangeratesapi.io/history?start_at=${previousDate}&end_at=${currentDate}`;
 
@@ -41,24 +42,36 @@ const App = () => {
         });
         
         setRawData(data.rates);
-        setCurrencies(Object.keys(data.rates[currentDate]));
-        setRates(data.rates[currentDate]);
+        setCurrencies(Object.keys(data.rates[currentDate]).sort());
+        setTimeout(() => {
+          setRates(data.rates[currentDate]);
+        }, 3500);
     };
 
     getRates();
   }, [fromCurrency, currentDate, url]);
 
   result = (amount * rates[toCurrency]).toFixed(3);
+
+  console.log(rates.length)
   return (
+    rates.length === undefined ?
     <div className="container">
-      <Header />
+      <Header date={currentDate} />
       <section className="currency from-currency">
         <InputField amount={amount} onInputChange={setAmount} disabled={false} />
         <p className="select-text">Click to select currency:</p>
         <CurrencySelect currency={fromCurrency} currencies={currencies} onCurrencyChange={(e) => setFromCurrency(e.target.value)} />
       </section>
       <section className="increase-decrease">
-        <AmountHandling amountHandle={setAmount} amount={amount}/>
+        <AmountHandling 
+          amountHandle={setAmount}
+          amount={amount}
+          changeFromCurrency={setFromCurrency}
+          changeToCurrency={setToCurrency}
+          toCurrency={toCurrency}
+          fromCurrency={fromCurrency}
+        />
       </section>
       <section className="currency to-currency">
         <InputField amount={result} disabled={true} />
@@ -67,6 +80,7 @@ const App = () => {
       </section>
       <CurrencyChart rawData={rawData} toCurrency={toCurrency} />
     </div>
+    : <Loader />
   );
 };
 

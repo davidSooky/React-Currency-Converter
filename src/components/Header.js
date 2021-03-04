@@ -1,7 +1,6 @@
 import "./Header.css";
 
-const Header = () => {
-    const currentDate = new Date().toLocaleDateString();
+const Header = ({ date }) => {
 
     return(
         <div className="header">
@@ -14,7 +13,7 @@ const Header = () => {
                 <h1>Currency Converter</h1>
             </div>
             <div className="date">
-                <p>{currentDate}</p>
+                <p>Currency rate for: {date}</p>
             </div>
       </div>
     );

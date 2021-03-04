@@ -3,22 +3,39 @@ button {
     font-weight: bold;
     color: #595959;
     background: #F25C05;
-    width: 25px;
-    height: 25px;
-    margin-right: 10px;
+    width: 35px;
+    padding: 5px;
+    height: 35px;
     border: 1px solid #0D0D0D;
     outline: none;
     transform-origin: center;
+    border-radius: 50%;
+    cursor: pointer;
     transition: 0.1s ease;
+}
+
+.handling {
+    position: relative;
+    height: 120px;
+    width: 80px;
+}
+
+.handling div {
+    height: 40px;
+}
+
+.handling div:first-child {
+    display: flex;
+    align-items: center;
+    justify-content: space-evenly;
+}
+
+.handling div:nth-child(2) {
+    margin-top: 35px;
+    display: grid;
+    place-items: center;
 }
 
 button:active  {
     transform: scale(0.95);
-}
-
-@media (max-width: 970px) {
-    button {
-        display: block;
-        margin-bottom: 10px;
-    }
 }

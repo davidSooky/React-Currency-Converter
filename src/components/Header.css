@@ -1,22 +1,38 @@
 .header {
     grid-column: span 3;
     font-size: 14px;
+    font-weight: bold;
     text-align: center;
     padding: 10px 0;
     color: #595959;
     background: #F25C05;
     display: flex;
     flex-wrap: wrap;
+    flex-direction: column;
     align-items: center;
-    justify-content: space-evenly;
+    justify-content: center;
     border-bottom: 2px solid #0D0D0D;
 }
 
-.header i {
-    margin-right: 20px;
+.header h1 {
+    font-size: 40px !important;
+}
+
+.header div {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-evenly;
+}
+
+.header div {
+    margin-bottom: 5px;
 }
 
 .header .date {
     font-size: 12px;
-    font-weight: bold;
+}
+
+@media (max-width: 795px) {
+    .header h1 {font-size: 25px !important; }
 }
