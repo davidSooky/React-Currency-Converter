@@ -46,24 +46,33 @@ const CurrencyChart = ({ rawData, toCurrency }) => {
                     }
                 },    
                 scales: {
+                    xAxes: [{
+                        time: {
+                            unit: 'month',
+                            unitStepSize: 1
+                        }
+                    }],
                     yAxes: [{
                         ticks: {
                             suggestedMin: Math.min(...sourceData.y),
                             suggestedMax: Math.max(...sourceData.y)
-                        }
+                        },
                     }]
-                }
+                },
+                // maintainAspectRatio: false
             }
         });
 
-        // Remove old chart before re-render, old chart stays there the new one just overlaps it - this fixes the issue
+        // Remove old chart before re-render, old chart does not get deleted, the new one just overlaps it - this fixes the issue
         return () => {
             CurrencyChart.destroy();
         }
     }, [rawData, toCurrency]);
 
     return (
-        <canvas id="myChart" width="300" height="200" ref={ref}></canvas>
+        <div className="chart-wrapper">
+            <canvas id="myChart" width="300" height="200" ref={ref}></canvas>
+        </div>
     );
 };
 

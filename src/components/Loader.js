@@ -1,10 +1,10 @@
 import React from 'react';
 import "./Loader.css";
 
-const Loader = () => {
+const Loader = ({ text }) => {
     return(
         <main className="loader">
-            <h1 className="loading-text">Getting currency rates...</h1>
+            <h1 className="loading-text">{text}</h1>
             <div className="dots">
                 <div></div>
                 <div></div>

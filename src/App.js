@@ -5,6 +5,7 @@ import Header from "./components/Header";
 import AmountHandling from "./components/AmountHandling";
 import CurrencyChart from "./components/CurrencyChart";
 import Loader from "./components/Loader";
+import { handleDate } from "./utilities/utilities";
 import axios from "axios";
 import "./App.css";
 
@@ -16,27 +17,21 @@ const App = () => {
   const [fromCurrency, setFromCurrency] = useState("EUR");
   const [toCurrency, setToCurrency] = useState("HUF");
 
-  // To calculate result from currency rate
+  // To calculate result from based on selected currency rate
   let result;
-  // Date to dynamically fetch data from current date
-  const splitDate = new Date().toLocaleDateString().split("/");
-  const currentDate = `${splitDate[2]}-${checkDateFormat(splitDate[0])}-${checkDateFormat(splitDate[1])}`;
-  const previousDate = `${splitDate[2] - 1}-${checkDateFormat(splitDate[0])}-${checkDateFormat(splitDate[1])}`;
-  const url = `https://api.exchangeratesapi.io/history?start_at=${previousDate}&end_at=${currentDate}`;
+  // Dates to dynamically fetch data for given interval
+  const currentDate = handleDate(false);
+  const previousDate = handleDate();
 
-  // Insert 0 before day and month index, if they are 1 digit numbers
-  function checkDateFormat(input) {
-    if(input[1] === undefined) {
-      return `0${input}`;
-    }
-    return input;
-  }
+  const BASE_URL = "https://api.exchangeratesapi.io/history";
 
   useEffect(() => {
     const getRates =  async () => {
-        const { data } = await axios.get(url, {
+        const { data } = await axios.get(BASE_URL, {
           params: {
-            base: fromCurrency
+            base: fromCurrency,
+            start_at: previousDate,
+            end_at: currentDate
           }
         });
         
@@ -49,10 +44,11 @@ const App = () => {
 
     getRates();
 
+    // Cleanup function, if not defined then currencies does not swap properly
     return () => {
       setRates([]);
     }
-  }, [fromCurrency, currentDate, url]);
+  }, [fromCurrency, currentDate]);
 
   result = (amount * rates[toCurrency]).toFixed(3);
 
@@ -83,7 +79,7 @@ const App = () => {
       <CurrencyChart rawData={rawData} toCurrency={toCurrency} />
     </div>
     : 
-    <Loader />
+    <Loader text={"Getting currency rates..."} />
   );
 };
 

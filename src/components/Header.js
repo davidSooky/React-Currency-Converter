@@ -13,7 +13,7 @@ const Header = ({ date }) => {
                 <h1>Currency Converter</h1>
             </div>
             <div className="date">
-                <p>Currency rate for: {date}</p>
+                <p>Currency rates for: {date}</p>
             </div>
       </div>
     );
