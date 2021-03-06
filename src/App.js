@@ -5,7 +5,7 @@ import Header from "./components/Header";
 import AmountHandling from "./components/AmountHandling";
 import CurrencyChart from "./components/CurrencyChart";
 import Loader from "./components/Loader";
-import { handleDate } from "./utilities/utilities";
+import { handleDate, dateNotAvailable } from "./utilities/utilities";
 import axios from "axios";
 import "./App.css";
 
@@ -19,10 +19,11 @@ const App = () => {
 
   // To calculate result from based on selected currency rate
   let result;
-  // Dates to dynamically fetch data for given interval
+  // Dates to dynamically fetch data for given interval, dateFix used for cases, when data for currentDate is not available yet
   const currentDate = handleDate(false);
   const previousDate = handleDate();
-
+  const dateFix = dateNotAvailable();
+ 
   const BASE_URL = "https://api.exchangeratesapi.io/history";
 
   useEffect(() => {
@@ -36,9 +37,10 @@ const App = () => {
         });
         
         setRawData(data.rates);
-        setCurrencies(Object.keys(data.rates[currentDate]).sort());
+
+        data.rates[currentDate] ? setCurrencies(Object.keys(data.rates[currentDate]).sort()) : setCurrencies(Object.keys(data.rates[dateFix]).sort());
         setTimeout(() => {
-          setRates(data.rates[currentDate]);
+            data.rates[currentDate] ? setRates(data.rates[currentDate]) : setRates(data.rates[dateFix]);
         }, 2000);
     };
 
