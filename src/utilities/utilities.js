@@ -13,9 +13,3 @@ export const handleDate = (startDate = true) => {
     
     return `${splitDate[2]}-${splitDate[1]}-${splitDate[0]}`;
 };
-
-// Returns currentDate minus 1 day, used in cases when data for currentDate is not availale yet
-export const dateNotAvailable = () => {
-    const splitDate = handleDate(false).split("-");
-    return `${splitDate[0]}-${splitDate[1]}-0${splitDate[2] - 1}`;
-};

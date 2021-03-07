@@ -5,7 +5,7 @@ import Header from "./components/Header";
 import AmountHandling from "./components/AmountHandling";
 import CurrencyChart from "./components/CurrencyChart";
 import Loader from "./components/Loader";
-import { handleDate, dateNotAvailable } from "./utilities/utilities";
+import { handleDate } from "./utilities/utilities";
 import axios from "axios";
 import "./App.css";
 
@@ -19,10 +19,9 @@ const App = () => {
 
   // To calculate result from based on selected currency rate
   let result;
-  // Dates to dynamically fetch data for given interval, dateFix used for cases, when data for currentDate is not available yet
+  // Dates to dynamically fetch data for given interval
   const currentDate = handleDate(false);
   const previousDate = handleDate();
-  const dateFix = dateNotAvailable();
  
   const BASE_URL = "https://api.exchangeratesapi.io/history";
 
@@ -37,10 +36,10 @@ const App = () => {
         });
         
         setRawData(data.rates);
+        setCurrencies(Object.keys(data.rates[Object.keys(data.rates)[0]]).sort())
 
-        data.rates[currentDate] ? setCurrencies(Object.keys(data.rates[currentDate]).sort()) : setCurrencies(Object.keys(data.rates[dateFix]).sort());
         setTimeout(() => {
-            data.rates[currentDate] ? setRates(data.rates[currentDate]) : setRates(data.rates[dateFix]);
+            setRates(data.rates[Object.keys(data.rates).sort()[Object.keys(data.rates).length - 1]]);
         }, 2000);
     };
 
@@ -57,7 +56,7 @@ const App = () => {
   return (
     rates.length === undefined ?
     <div className="container">
-      <Header date={currentDate} />
+      <Header date={Object.keys(rawData).sort()[Object.keys(rawData).length - 1]} />
       <section className="currency from-currency">
         <InputField amount={amount} onInputChange={setAmount} disabled={false} />
         <p className="select-text">Click to select currency:</p>
